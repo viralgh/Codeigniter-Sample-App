@@ -19,3 +19,10 @@ function generate_country_options($selected_id = 0)
 	}
 	return $str;
 }
+
+function get_states_by_country_id($id=0)
+{
+	$ci =& get_instance();
+
+	return $ci->db->get_where('states', array('country_id' => $id))->result();
+}

@@ -6,14 +6,14 @@ class City extends CI_Controller {
 	function __construct()
     {
         parent::__construct();
-        $this->load->model('state_model');
+        $this->load->model('city_model');
     }
 
 	public function index()
 	{
 		$data = array('page_title' => 'Cities - Viral Vadgama');
  
-		$data['state_data'] = $this->state_model->get_states();
+		$data['city_data'] = $this->city_model->get_cities();
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('city/list', $data);
@@ -24,88 +24,104 @@ class City extends CI_Controller {
 	{
 		if(ctype_digit($id))
 		{
-			$this->state_model->delete_state($id);
-			$this->session->set_flashdata('data','State deleted successfully with ID:'.$id);
+			$this->city_model->delete_city($id);
+			$this->session->set_flashdata('data','City deleted successfully with ID:'.$id);
 		}
-		redirect('state');
+		redirect('city');
 	}
 
 	public function add()
 	{
-		$data = array('page_title' => 'Add State - Viral Vadgama');
+		$data = array('page_title' => 'Add City - Viral Vadgama');
 
-		$data['state_name'] = '';
+		$data['city_name'] = '';
 		$data['state_id'] = '';
 		$data['country_id'] = '';
 		
 		if($this->input->post())
 		{
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('state_name', 'State Name', 'required|min_length[3]');
+			$this->form_validation->set_rules('city_name', 'City Name', 'required|min_length[3]');
 			$this->form_validation->set_rules('country_id', 'Country', 'required');
+			$this->form_validation->set_rules('state_id', 'State', 'required');
 
 			if($this->form_validation->run() !== FALSE)
 			{
-				$insert_id = $this->state_model->insert_state(
-								$this->input->post('state_name'),
-								$this->input->post('country_id')
+				$insert_id = $this->city_model->insert_city(
+								$this->input->post('city_name'),
+								$this->input->post('state_id')
 							);
-				$this->session->set_flashdata('data','State added successfully with ID:'.$insert_id);
-				redirect('state');
+				$this->session->set_flashdata('data','City added successfully with ID:'.$insert_id);
+				redirect('city');
 			}
 			else
 			{
-				$data['state_name'] = $this->input->post('state_name');
+				$data['city_name'] = $this->input->post('city_name');
+				$data['state_id'] = $this->input->post('state_id');
 				$data['country_id'] = $this->input->post('country_id');
 			}
 		}
 		
 		$this->load->view('templates/header', $data);
-		$this->load->view('state/add', $data);
+		$this->load->view('city/add', $data);
 		$this->load->view('templates/footer', $data);
 	}
 
 	public function edit($id=0)
 	{
-		$data = array('page_title' => 'Edit State - Viral Vadgama');
+		$data = array('page_title' => 'Edit City - Viral Vadgama');
 
-		if(!ctype_digit($id)) redirect('state');
+		if(!ctype_digit($id)) redirect('city');
 
-		$current = $this->state_model->get_states($id);
+		$current = $this->city_model->get_cities($id);
 
-		if(!$current) redirect('state');
+		if(!$current) redirect('city');
 
-		$data['state_name'] = $current->sname;
-		$data['state_id'] = $current->sid;
-		$data['country_id'] = $current->cid;
+		$data['city_name'] = $current->city_name;
+		$data['state_id'] = $current->state_id;
+		$data['country_id'] = $current->country_id;
+		$data['id'] = $id;
 		
 		if($this->input->post())
 		{
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('state_name', 'State Name', 'required|min_length[3]');
+			$this->form_validation->set_rules('city_name', 'City Name', 'required|min_length[3]');
 			$this->form_validation->set_rules('country_id', 'Country', 'required');
-			$this->form_validation->set_rules('state_id', 'State ID', 'required');
+			$this->form_validation->set_rules('state_id', 'State', 'required');
 
 			if($this->form_validation->run() !== FALSE)
 			{
-				$edit_id = $this->state_model->edit_state(
-								$this->input->post('state_name'),
-								$this->input->post('country_id'),
+				$insert_id = $this->city_model->edit_city(
+								$this->input->post('city_name'),
+								$this->input->post('state_id'),
 								$id
 							);
-				$this->session->set_flashdata('data','State edited successfully with ID:'.$id);
-				redirect('state');
+				$this->session->set_flashdata('data','City edited successfully with ID:'.$id);
+				redirect('city');
 			}
 			else
 			{
-				$data['state_name'] = $this->input->post('state_name');
-				$data['state_id'] = $current->sid;
+				$data['city_name'] = $this->input->post('city_name');
+				$data['state_id'] = $this->input->post('state_id');
 				$data['country_id'] = $this->input->post('country_id');
 			}
 		}
 		
 		$this->load->view('templates/header', $data);
-		$this->load->view('state/edit', $data);
+		$this->load->view('city/edit', $data);
 		$this->load->view('templates/footer', $data);
+	}
+
+	function state_ajax()
+	{
+		$cid = $this->input->post('country_id');
+
+		if($cid && ctype_digit($cid))
+		{
+			$data['states'] = get_states_by_country_id($cid);
+			$data['selected'] = $this->input->post('selected');
+
+			$this->load->view('city/state_ajax', $data);
+		}
 	}
 }

@@ -9,7 +9,9 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>City Name</th>
+                <th>State Name</th>
+                <th>Country Name</th>
                 <th>ISO2</th>
                 <th>Delete</th>
                 <th>Edit</th>
@@ -19,7 +21,9 @@
         <tfoot>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>City Name</th>
+                <th>State Name</th>
+                <th>Country Name</th>
                 <th>ISO2</th>
                 <th>Delete</th>
                 <th>Edit</th>
@@ -29,16 +33,17 @@
         <tbody>
             <?php
 
-            if($country_data){
-                foreach($country_data as $single){
-
+            if($city_data){
+                foreach($city_data as $single){
                 ?>
             <tr>
-                <td><?php echo $single->id?></td>
-                <td><?php echo $single->name?></td>
+                <td><?php echo $single->city_id?></td>
+                <td><?php echo $single->city_name?></td>
+                <td><?php echo $single->state_name?></td>
+                <td><?php echo $single->country_name?></td>
                 <td><?php echo $single->iso2?></td>
-                <td><a data-id="<?php echo $single->id?>" class="delete btn btn-danger btn-sm">Delete</a></td>
-                <td><a data-id="<?php echo $single->id?>" class="edit btn btn-warning btn-sm">Edit</a></td>
+                <td><a data-id="<?php echo $single->city_id?>" class="delete btn btn-danger btn-sm">Delete</a></td>
+                <td><a data-id="<?php echo $single->city_id?>" class="edit btn btn-warning btn-sm">Edit</a></td>
             </tr>
             <?php 
 
@@ -59,7 +64,7 @@ $(document).ready(function() {
         'fnDrawCallback': function(){
             $('.edit').click(function(){
                 $id = $(this).data('id');
-                location.href = <?php echo json_encode(site_url('country/edit'))?>+'/'+$id;
+                location.href = <?php echo json_encode(site_url('city/edit'))?>+'/'+$id;
             });
 
             $('.delete').click(function(){
@@ -67,7 +72,7 @@ $(document).ready(function() {
                 sure = confirm('Are you sure?');
                 if(sure)
                 {
-                    location.href = <?php echo json_encode(site_url('country/delete'))?>+'/'+$id;
+                    location.href = <?php echo json_encode(site_url('city/delete'))?>+'/'+$id;
                 }
             });
         }
